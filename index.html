@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Calculator Project</title>
+  <link href="https://fonts.googleapis.com/css?family=Lato|Roboto" rel="stylesheet" type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous">
+  </script>
+</head>
+  <body>
+
+<div class="text-center">
+   <h1> Functional Calculator Project </h1>
+  <h4> Built by Polaris Coding </br> using HTML, CSS, Bootstrap, Javascript and jQuery </h4>
+</div>
+<div id="calcDisplay">
+  <span id="steps">0</span> <!-- the 0 is for it to load initially with blank calc display screen -->
+  <hr/>  <!-- this is just a devider line for styling-->
+</div>
+<div class="text-center" id="calculator"> <!--this will be all the primary calc buttons. NOTE, this will NOT be a responsive design, as calculator designs always have a specified grid layout-->
+ <div class="btn-group ">
+  <a class="btn btn-danger " id="clearAll">AC</a> <!--btn-danger is to make a red button-->
+  <a class="btn btn-danger" id="clearLast">CE</a>
+  <a class="btn btn-warning" id="/">/</a>
+    <a class="btn btn-warning " id="*">X</a><!--NOTE THIS MUST BE a * and not an X or it will not work!!!-->
+  </div></br>
+<div class="btn-group">
+<a class="btn btn-primary" id="7">7</a>
+<a class="btn btn-primary" id="8">8</a>
+<a class="btn btn-primary" id="9">9</a>
+<a class="btn btn-warning" id="-">-</a>
+</div></br>
+<div class="btn-group">
+<a class="btn btn-primary" id="4">4</a>
+<a class="btn btn-primary" id="5">5</a>
+<a class="btn btn-primary" id="6">6</a>
+<a class="btn btn-warning" id="+">+</a>
+</div></br>
+<div class="btn-group">
+<a class="btn btn-primary" id="1">1</a>
+<a class="btn btn-primary" id="2">2</a>
+<a class="btn btn-primary" id="3">3</a>
+<a class="btn btn-warning" id=".">.</a>
+</div></br>
+<div class="btn-group">
+<a class="btn btn-primary bigButton0" id="0">0</a>
+<a class="btn btn-danger bigButtonT" id="total">=</a>
+</div></br>
+
+<style>
+
+body{
+  background-color: black;
+}
+h1{
+  color:white;
+  font-family:"Roboto";
+}
+h4{
+  color:white;
+  font-family:"Lato";
+}
+#calcDisplay{
+  height: 75px;
+  width: 250px;
+  background-color: grey;
+  border-top-left-radius:1em;
+  border-top-right-radius:1em;
+  margin-top: 100px;
+  padding-top: 15px; /*this is to bring the 0 down a bit to not be truncated by the chosen curved edge*/
+  margin-right:auto;
+  margin-left:auto;
+  /*padding-left: 150px;*/  /* moves the 0 to the right but with long results this get complicated */
+}
+#calculator{
+  background-color: grey;
+  width: 250px;
+  /*padding-top: 20px; */
+  /*padding-bottom: 30px; */
+  border-bottom-left-radius: 1em;
+  border-bottom-right-radius: 1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#steps{
+  padding-left: 50px;
+  font-size: 2em;
+}
+
+a{  /*this is for the buttons*/
+  /*margin: 5px;*/  /*space between the buttons*/
+  width: 63px;
+  /*width: 2.6vw;  means 2.6 of the view window, this makes everything look similar, see more at W3 schools*/
+  height: 40px;
+  background-color: orange;
+}
+.btn{
+  border-radius: 0;  /*this makes the buttons square shaped*/
+  border-thickness: 2px;
+  border-color: grey;
+
+}
+.bigButton0{  /*use  . because it is a class*/
+  width: 125px;
+  border-bottom-left-radius: 1em;
+}
+.bigButtonT{  /*use  . because it is a class*/
+  width: 125px;
+  border-bottom-right-radius: 1em;
+}
+
+</style>
+
+<script>
+
+//Inspiration from "Coding Tutorials 360" as well as "Mr Snow" on Youtube.
+
+$(document).ready(function(){  //when this page loads, run this jQuery code right away
+
+  //Stores inputs from the user to calculate later
+  var inputs = [""];  // empty quote needed in here to avoid validation errors
+  var totalString;  //string to store current input string, that displays on the calculator
+
+
+  //cannot allow entires that don't make sense, like 3.12.5, or  3 * / 2,  or  3 + - 2,
+  //Operators array for validation without the .
+  var operatorsBasic = ["+","-","/","*"];
+  //operators array with the .  for validation
+  var operatorsDot = ["."];
+  //numbers for validation
+  var nums = [0,1,2,3,4,5,6,7,8,9];
+
+  function getValue(input){  //this updates everything
+    if(operatorsDot.includes(inputs[inputs.length-1])===true && input === "."){  //includes() is built in to return true or false if something is present in a given item. inputs[inputs.length-1]) is the last value
+      console.log("Error: Duplicate '.'"); //can't have 2 dots, last value being a dot and current input being a dot
+    }
+    else if(inputs.length === 1 && operatorsBasic.includes(input) === false){  //checks if on first entered value, and that first value needs to be a number or a dot or is invalid.
+      inputs.push(input);   //if valid, add it to the array
+    }
+    else if(operatorsBasic.includes(inputs[inputs.length-1])===false){  //if last entry is not also a basic operator? add it to the array
+      inputs.push(input);
+    }
+    else if(nums.includes(Number(input))){ //Number() converts our string into a number, if it is true (no need to add === true)
+      inputs.push(input);
+    }
+    //at the end run the update() function
+    update();
+  }
+
+  function update ()  {//this displays the most recently inputed value onto the calculator display
+    totalString = inputs.join("");
+    $("#steps").html(totalString);
+  }
+
+  function getTotal(){ //this does the calculation once the = is pressed
+    totalString = inputs.join("");
+    $("#steps").html(eval(totalString));  //eval()  is built in to evaluate / calculate the math FOR YOU, and returns a single number (the answer)
+  }
+
+  //to target the buttons that are clicked and have them each do something.
+  $("a").on("click", function(){  //target anchor tag, a, when clicked, run a function
+
+    if(this.id === "clearAll") {  //this.id is the id of the item that we clicked
+      inputs=[""];  //reset our inputs array back to oriingal blank value
+      update();  //call the update function to demonstrate that it is in fact empty
+    }
+
+    else if(this.id === "clearLast"){
+      inputs.pop();  //just pop off the last value (most recently entered input)
+      update();
+    }
+    else if(this.id === "total"){
+      getTotal();  //user pressed "=", so run the function that does the calculation with eval()
+      //update();??
+    }
+
+    //if not one of the above, any other input is one of two categories of actions:
+    else {
+      //check the last inputed value to see if it matches one of the operator symbols
+      if(inputs[inputs.length-1].indexOf("+","-","/","*",".") ===-1){
+        //if not present, call getValue function. This gets collects and stores if it is 0-9?
+        getValue(this.id);
+      }
+      else{
+        getValue(this.id);
+        //don't get why this is the same
+      }
+    }
+
+
+  });
+});
+
+</script>
+
+  </body>
+</html>
